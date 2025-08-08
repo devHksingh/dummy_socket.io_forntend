@@ -20,11 +20,11 @@ const searchUser = async (data) => {
 
   console.log("api call for search users data: ", data);
   console.log(
-    "`http://localhost:3001/api/v1/users/${data.text}` ",
-    `http://localhost:3001/api/v1/users/${data.text}`
+    "`https://dummy-socket-io-jnra.onrender.com/api/v1/users/${data.text}` ",
+    `https://dummy-socket-io-jnra.onrender.com/api/v1/users/${data.text}`
   );
   const res = await axios.post(
-    `http://localhost:3001/api/v1/users/${data.text}`,
+    `https://dummy-socket-io-jnra.onrender.com/api/v1/users/${data.text}`,
     {}, // empty body
     {
       headers: {
@@ -38,13 +38,13 @@ const searchUser = async (data) => {
 const createChatRoom = async (data) => {
   console.log("axios createChatRoom function data------", data);
   console.log(
-    `-------------http://localhost:3001/api/v1/chats/${data}----------`,
+    `-------------https://dummy-socket-io-jnra.onrender.com/api/v1/chats/${data}----------`,
     data
   );
   const token = sessionStorage.getItem("token");
   console.log("token in header: ", token);
   const res = await axios.post(
-    `http://localhost:3001/api/v1/chats/`,
+    `https://dummy-socket-io-jnra.onrender.com/api/v1/chats/`,
     {
       anotherUserEmail: data,
     },

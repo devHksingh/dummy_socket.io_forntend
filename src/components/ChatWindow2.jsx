@@ -11,7 +11,7 @@ const getAllChatRooms = async () => {
   const token = sessionStorage.getItem("token");
   console.log("token in header: ", token);
   const res = await axios.get(
-    `http://localhost:3001/api/v1/chats/`,
+    `https://dummy-socket-io-jnra.onrender.com/api/v1/chats/`,
     {
       headers: {
         Authorization: `${token}`,
@@ -25,7 +25,7 @@ const getAllMessages = async (chatIds) => {
   const token = sessionStorage.getItem("token");
   console.log("token in header: ", token);
   const res = await axios.post(
-    `http://localhost:3001/api/v1/messages/getAllMessagesByChatIds`,
+    `https://dummy-socket-io-jnra.onrender.com/api/v1/messages/getAllMessagesByChatIds`,
     {
       chatIds,
     },
@@ -86,7 +86,7 @@ const ChatSidebar = () => {
     console.log("🔌 Sidebar: Initializing Socket.io connection");
 
     // Initialize socket connection
-    socketRef.current = io("http://localhost:3001", {
+    socketRef.current = io("https://dummy-socket-io-jnra.onrender.com", {
       auth: {
         token: token,
       },

@@ -20,7 +20,7 @@ const gettAllMessagesByChatId = async (id) => {
 
   console.log("token in header: ", token);
   const res = await axios.post(
-    ` http://localhost:3001/api/v1/messages/getAllMessagesByChatIds`,
+    ` https://dummy-socket-io-jnra.onrender.com/api/v1/messages/getAllMessagesByChatIds`,
     {
       chatIds: [`${id}`],
     },
@@ -37,7 +37,7 @@ const gettAllMessagesByChatId = async (id) => {
 const createAMessage = async ({ chatId, text }) => {
   const token = sessionStorage.getItem("token");
   const res = await axios.post(
-    ` http://localhost:3001/api/v1/messages/`,
+    ` https://dummy-socket-io-jnra.onrender.com/api/v1/messages/`,
     {
       chatId,
       text,
@@ -68,7 +68,8 @@ const ChatWindow = () => {
   const [senderName, setSenderName] = useState("");
   const [senderId, setSenderId] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [usersTyping, setUsersTyping] = useState(new Set());
+  // Changed this to store user details instead of just IDs
+  const [usersTyping, setUsersTyping] = useState(new Map());
   const [isConnected, setIsConnected] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(new Set());
   const typingTimeoutRef = useRef(null);
@@ -100,9 +101,9 @@ const ChatWindow = () => {
     }
 
     console.log("🔌 Initializing Socket.io connection with token:", token.substring(0, 20) + "...");
-
+    // https://dummy-socket-io-jnra.onrender.com  => http://localhost:3001
     // Initialize socket connection
-    socketRef.current = io("http://localhost:3001", {
+    socketRef.current = io("https://dummy-socket-io-jnra.onrender.com", {
       auth: {
         token: token, // Make sure token includes "Bearer " prefix if required
       },
@@ -147,17 +148,27 @@ const ChatWindow = () => {
       }, 100);
     });
 
-    // Typing indicators
-    socket.on("user_typing", ({ userId, userEmail }) => {
-      console.log(`👤 ${userEmail} is typing...`);
-      setUsersTyping((prev) => new Set([...prev, userId]));
+    // Typing indicators - Updated to store user details
+    socket.on("user_typing", ({ userId, userEmail, userName }) => {
+      console.log(`👤 ${userName} is typing...`);
+      // Don't show typing indicator for current user
+      if (userId !== loginUserId) {
+        setUsersTyping((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(userId, { 
+            userEmail: userEmail || 'Unknown User', 
+            userName: userName || userEmail || 'Someone' 
+          });
+          return newMap;
+        });
+      }
     });
 
     socket.on("user_stopped_typing", ({ userId }) => {
       setUsersTyping((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(userId);
-        return newSet;
+        const newMap = new Map(prev);
+        newMap.delete(userId);
+        return newMap;
       });
     });
 
@@ -204,7 +215,7 @@ const ChatWindow = () => {
         console.log("🔌 Socket disconnected on cleanup");
       }
     };
-  }, []);
+  }, [loginUserId]); // Added loginUserId as dependency
 
   // Join room when chat is selected
   useEffect(() => {
@@ -259,7 +270,7 @@ const ChatWindow = () => {
   }, [selectedChat]);
 
   // Fetch messages for selected chat
-  const { data: messagesData, refetch } = useQuery({
+  const { data: messagesData } = useQuery({
     queryKey: ["messages", chatId],
     queryFn: () => gettAllMessagesByChatId(chatId),
     enabled: !!chatId,
@@ -381,6 +392,22 @@ const ChatWindow = () => {
     }
   };
 
+  // Helper function to format typing users
+  const getTypingUsersText = () => {
+    const typingUsers = Array.from(usersTyping.values());
+    
+    if (typingUsers.length === 0) return '';
+    
+    if (typingUsers.length === 1) {
+      const user = typingUsers[0];
+      return `${user.userName || user.userEmail} is typing...`;
+    } else if (typingUsers.length === 2) {
+      return `${typingUsers[0].userName || typingUsers[0].userEmail} and ${typingUsers[1].userName || typingUsers[1].userEmail} are typing...`;
+    } else {
+      return `${typingUsers.length} people are typing...`;
+    }
+  };
+
   // Connection status indicator
   const ConnectionStatus = () => (
     <div className="flex items-center space-x-2 text-xs text-gray-500 mb-2">
@@ -392,7 +419,7 @@ const ChatWindow = () => {
       <span>{isConnected ? 'Connected' : 'Disconnected'}</span>
       {usersTyping.size > 0 && (
         <span className="text-blue-500 italic">
-          Someone is typing...
+          {getTypingUsersText()}
         </span>
       )}
     </div>

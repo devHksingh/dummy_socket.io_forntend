@@ -18,7 +18,7 @@ const formSchema = z.object({
 
 const loginUser = async (data) => {
   const res = await axios.post(
-    "http://localhost:3001/api/v1/users/login",
+    "https://dummy-socket-io-jnra.onrender.com/api/v1/users/login",
     data
   );
   return res;
