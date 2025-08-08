@@ -19,7 +19,7 @@ show list of user with name and email
 */
 const backendUrl =
   import.meta.env.VITE_MODE === "development"
-    ? "http://localhost:3001/"
+    ? "https://dummy-socket-io-jnra.onrender.com/"
     : import.meta.env.VITE_BACKEND_URL;
 const fetchAllUserChat = async () => {
   const token = sessionStorage.getItem("token");
