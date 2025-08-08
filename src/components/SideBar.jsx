@@ -27,7 +27,7 @@ const fetchAllUserChat = async () => {
   console.log("token is", token);
 
   if (!token) throw new Error("No token found");
-  const response = await axios.get(`${backendUrl}api/v1/chats/`, {
+  const response = await axios.get(`https://dummy-socket-io-jnra.onrender.com/api/v1/chats/`, {
     headers: {
       Authorization: `${token}`,
     },
