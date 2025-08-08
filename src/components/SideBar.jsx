@@ -17,10 +17,11 @@ show list of user with name and email
  6. OnClick Create Chat Button create chat with user id and show in sidebar
  7. OnClick Chat Name show that chat in ChatShown component
 */
-const backendUrl =
-  import.meta.env.VITE_MODE === "development"
-    ? "https://dummy-socket-io-jnra.onrender.com/"
-    : import.meta.env.VITE_BACKEND_URL;
+// const backendUrl =
+//   import.meta.env.VITE_MODE === "development"
+//     ? "https://dummy-socket-io-jnra.onrender.com/"
+//     : import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = "https://dummy-socket-io-jnra.onrender.com/";
 const fetchAllUserChat = async () => {
   const token = sessionStorage.getItem("token");
   console.log("token is", token);
